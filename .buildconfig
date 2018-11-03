@@ -1,0 +1,10 @@
+[default]
+name=Default
+runtime=host
+config-opts=
+run-opts=
+prefix=/home/micha/.cache/gnome-builder/install/xls2sql/host
+app-id=
+postbuild=
+prebuild=
+default=true

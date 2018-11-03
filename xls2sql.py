@@ -5,7 +5,7 @@ parser.add_argument('filename', help='filename of xls file')
 parser.add_argument('--database', help='database to use (default: basename of the file)')
 parser.add_argument('--sheet',metavar='N',type=int, default=1, help='sheet number (default: 1)')
 parser.add_argument('--header',metavar='N', type=int, default=1, help='headerline (default: 1)')
-parser.add_argument("--lines",metavar='LIST', help="columns of integer type")
+parser.add_argument("-l","--lines",metavar='LIST', help="list of lines and line ranges")
 
 # column types: int float double char64 text time date dt=datetime
 parser.add_argument("-i","--int",metavar='LIST', help="columns of integer type")
@@ -107,7 +107,7 @@ for i in range(len(fieldlist)):
         comma=True
 print (");")   
 
-
+# formatting a value to insert format
 def printvalue(x,fieldtype):
     if fieldtype=="INT":
         print("{0:d}".format(int(x)),end='')
@@ -115,9 +115,9 @@ def printvalue(x,fieldtype):
         print('{0}'.format(x),end='')
     elif fieldtype=="TEXT":
         print('"{0}"'.format(x),end='')
-    
-# process cells row by row
-for rx in range(args.header, sh.nrows):
+
+# convert one row of input to a record for inserting
+def processrow(rx):
     print ("INSERT INTO " + SHEETNAME + " (",end='')
     comma=False
     for i in range(len(fieldlist)):
@@ -135,5 +135,19 @@ for rx in range(args.header, sh.nrows):
             comma=True
     print(");")
 
-
+# process cells row by row
+        
+if args.lines:
+    for entry in args.lines.split(','):
+        if '-' in entry:
+            rangeentry=entry.split('-')
+            start=int(rangeentry[0])-1
+            end=int(rangeentry[1])
+            for rx in range(start, end):
+                processrow(rx)
+        else:
+            processrow(int(entry)-1)
+else:
+    for rx in range(args.header, sh.nrows):
+        processrow(rx)
     
