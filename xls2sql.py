@@ -46,6 +46,7 @@ def getcols(attribute):
 intcols=getcols("int")
 floatcols=getcols("float")
 textcols=getcols("char")
+timecols=getcols("time")
 
 import xlrd
 book = xlrd.open_workbook(args.filename)
@@ -79,6 +80,7 @@ fieldlist=['']*sh.ncols
 for i in intcols: fieldlist[i-1]="INT"
 for i in floatcols: fieldlist[i-1]="DOUBLE"
 for i in textcols: fieldlist[i-1]="TEXT"
+for i in timecols: fieldlist[i-1]="TIME"
 eprint(fieldlist)
 eprint()
 
@@ -108,6 +110,7 @@ for i in range(len(fieldlist)):
 print (");")   
 
 # formatting a value to insert format
+import datetime
 def printvalue(x,fieldtype):
     if fieldtype=="INT":
         print("{0:d}".format(int(x)),end='')
@@ -115,6 +118,15 @@ def printvalue(x,fieldtype):
         print('{0}'.format(x),end='')
     elif fieldtype=="TEXT":
         print('"{0}"'.format(x),end='')
+    elif fieldtype=="TIME":
+        x=x+0.000000000000001 # spurious rounding correction TODO 
+        h=x*24
+        hh=int(h)
+        m=h*60 - hh*60
+        mm=int(m)
+        s=m*60 - mm*60
+        ss=int(s)
+        print('"{0}"'.format(datetime.time(hh,mm,ss).isoformat()),end='')
 
 # convert one row of input to a record for inserting
 def processrow(rx):
