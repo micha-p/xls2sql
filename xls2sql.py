@@ -131,7 +131,10 @@ def processrow(rx):
         if fieldlist[i] != "":
             if comma: print(',',end='')
             cell=sh.cell(rx,i)
-            printvalue(cell.value,fieldlist[i])
+            if cell.ctype==0:
+                print("NULL",end='')
+            else:
+                printvalue(cell.value,fieldlist[i])
             comma=True
     print(");")
 
